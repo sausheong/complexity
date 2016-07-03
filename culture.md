@@ -305,7 +305,7 @@ At the same time, I create a chart of the 3 values I wanted to measure by retrie
 
 Let's run it and see what we get. You should be able to get the same simulation as the one in the figure below when you access the url http://localhost:9292/culture/show in your browser.
 
-![The simulation grid](culture_sim.png)
+![The simulation grid](figures/culture/culture_sim.png)
 
 You can also see the following chart if you access the url http://localhost:9292/culture/stats/show in your browser.
 
