@@ -17,7 +17,7 @@ For example, take [laksa](https://en.wikipedia.org/wiki/Laksa), a popular spicy 
 
 Similarly, we find linguistic equivalents in [Singlish](https://en.wikipedia.org/wiki/Singlish), an English-based creole language spoken in Singapore, containing words originating from English, Malay, various dialects of Chinese and Indian languages, and also in [Bahasa Rojak](https://en.wikipedia.org/wiki/Bahasa_Rojak) a Malaysian pidgin language formed by code-switching between English, Malay, various dialects of Chinese and Indian languages in Malaysia. If we dig deeper, various things we take for granted as being iconic to a culture, often have origins in other cultures for e.g. [English tea](https://www.tea.co.uk/history-of-tea) (which came from China) and [Zen Buddhism](https://en.wikipedia.org/wiki/Zen) (popularized in the West through Japanese Zen, which came from Chan Buddhism, which originated in China and was influenced by Taoism, but in turn is a school of Mahayana Buddhism which came from India).
 
-As Stephen Hawkings wrote in the open to "A Brief History of Time" -- it's turtles all the way down.
+As Stephen Hawkings wrote in the opening to [A Brief History of Time](http://www.hawking.org.uk/a-brief-history-of-time.html) -- it's turtles all the way down.
 
 ![Turtles all the way down](figures/culture/turtles.jpg)
 
@@ -25,7 +25,7 @@ As Stephen Hawkings wrote in the open to "A Brief History of Time" -- it's turtl
 
 How people and cultures interact and influence each other is the subject of numerous research. Various social scientists, anthropologists and biologists have studied cultural changes, came up with plausible theories and have written papers to describe these theories. One such [paper][2] by Robert Axelrod, a seminal one that has been referenced in much later research, built an agent-based model that follows a set of simple rules in an attempt to produce emergent behavior (that is, he built a model of a complex system).
 
-I've attempted to do an alternate agent-based model based on the rules described on Axelrod's paper. I used Ruby to simulate the model and React to visual it. 
+I've attempted to do an alternate [agent-based model](https://en.wikipedia.org/wiki/Agent-based_model) based on the rules described on Axelrod's paper. I used Ruby to simulate the model and [React.js](https://facebook.github.io/react/) to visual it. 
 
 The model I used is based on two very simple premises:
 
@@ -74,7 +74,7 @@ Let's take a look at the simulation code next.
 
 ## The simulation in Ruby
 
-First, we need to build out the grid using a Grid class, which is subclassed from Array. Here's the code in a file named grid.rb.
+First, we need to build out the grid using a Grid class, which is subclassed from Array. Here's the code in a file named `grid.rb`.
 
 ```ruby
 class Grid < Array
@@ -138,7 +138,7 @@ end
 
 When we create an instance of Grid, all its cells are initialized with random colors. The main method that is used is `find_neighbours_index` which returns an array of the indices of the neighbors in the grid. As you can see from the code, the corner cells have 3 neighbors, the edge cells have 5 neighbors and the rest all have 8 neighbors.
 
-The main simulation code is in the CultureSimulation class, in a file named culture.rb.
+The main simulation code is in the `CultureSimulation` class, in a file named `culture.rb`.
 
 ```ruby
 class CultureSimulation 
@@ -255,7 +255,7 @@ Of course, the simulation class doesn't run on its own, we're going to run it as
 
 ## The simulation as a web service
 
-To create the web service, I used Sinatra, a Ruby DSL (domain-specific language) for creating web applications and services.
+To create the web service, I used [Sinatra](http://www.sinatrarb.com/), a Ruby DSL (domain-specific language) for creating web applications and services.
 
 ```ruby
 require 'sinatra' 
@@ -312,9 +312,9 @@ At the same time, I create a chart of the 3 values I wanted to measure by retrie
 
 ## Visualizing the simulation
 
-Now that you've seen the simulation that is run at the server, let's take a look at how we can visualize it on the browser. For this I've used React.js, a Javascript library for building user interfaces, popularly created and used by Facebook. 
+Now that you've seen the simulation that is run at the server, let's take a look at how we can visualize it on the browser. For this I've used [React.js](https://facebook.github.io/react/), a Javascript library for building user interfaces, popularly created and used by Facebook. 
 
-To host the Javascript, we first need a html page. I used eRb, which is a templating system built into Ruby (which is really nothing more than HTML with embedded Ruby code). Here's the `culture.erb` file.
+To host the Javascript, we first need a html page. I used [eRb](http://www.stuartellis.eu/articles/erb/), which is a templating system built into Ruby (which is really nothing more than HTML with embedded Ruby code). Here's the `culture.erb` file.
 
 ```html
 <!DOCTYPE html>
