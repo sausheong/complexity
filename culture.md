@@ -21,6 +21,8 @@ As Stephen Hawkings wrote in the open to "A Brief History of Time" -- it's turtl
 
 ![Turtles all the way down](figures/culture/turtles.jpg)
 
+## Modeling cultural interactions
+
 How people and cultures interact and influence each other is the subject of numerous research. Various social scientists, anthropologists and biologists have studied cultural changes, came up with plausible theories and have written papers to describe these theories. One such [paper][2] by Robert Axelrod, a seminal one that has been referenced in much later research, built an agent-based model that follows a set of simple rules in an attempt to produce emergent behavior (that is, he built a model of a complex system).
 
 I've attempted to do an alternate agent-based model based on the rules described on Axelrod's paper. I used Ruby to simulate the model and React to visual it. 
@@ -68,7 +70,11 @@ Finally, if cultural exchange does happen, the simulation will randomly pick one
 
 ![Copy a feature value from one culture to another](figures/culture/culture4.jpg)
 
-Let's take a look at the simulation code next. First, we need to build out the grid using a Grid class, which is subclassed from Array. Here's the code in a file named grid.rb.
+Let's take a look at the simulation code next. 
+
+## The simulation in Ruby
+
+First, we need to build out the grid using a Grid class, which is subclassed from Array. Here's the code in a file named grid.rb.
 
 ```ruby
 class Grid < Array
@@ -247,8 +253,9 @@ This is how the `tick` method works:
 
 Of course, the simulation class doesn't run on its own, we're going to run it as a part of a web service, which emits JSON that can be consumed by a simulation client written in React.js. Before going to the React client, let's take a look at the web service. 
 
-To create the web service, I used Sinatra, a Ruby DSL (domain-specific language) for creating web applications and services.
+## The simulation as a web service
 
+To create the web service, I used Sinatra, a Ruby DSL (domain-specific language) for creating web applications and services.
 
 ```ruby
 require 'sinatra' 
@@ -303,6 +310,118 @@ The main simulation comes when a GET on `/cluture` is requested, which results i
 
 At the same time, I create a chart of the 3 values I wanted to measure by retrieving those values from the simulation and returning them as JSON to the client.
 
+## Visualizing the simulation
+
+Now that you've seen the simulation that is run at the server, let's take a look at how we can visualize it on the browser. For this I've used React.js, a Javascript library for building user interfaces, popularly created and used by Facebook. 
+
+To host the Javascript, we first need a html page. I used eRb, which is a templating system built into Ruby (which is really nothing more than HTML with embedded Ruby code). Here's the `culture.erb` file.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Culture</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.0/react.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap<%= @width %>.min.js"></script>
+    <link href="/css/bootstrap<%= @width %>.min.css" rel="stylesheet"/>
+    <style>
+    body {
+      padding: 20px;
+      margin: 20px;
+    }
+    .nopadding {
+       padding: 0 !important;
+       margin: 0 !important;
+       height: 10px;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="content"></div>    
+    <script type="text/babel" src="/js/culture.js"></script> 
+  </body>
+</html>
+```
+
+Most of the code should be self explanatory. The embedded `@width` variable sends the size of the grid to select the correct stylesheet to use. 
+
+If you noticed that I'm using Bootstrap, congratulations, you're very observant. Bootstrap is a HTML and CSS framework that provides a consistent set of styling for building web sites and applications. The default [Bootstrap](http://getbootstrap.com/) setting uses a 12-column grid layout, but the number of columns are configurable using a [tool on the Bootstrap site](http://getbootstrap.com/customize/) itself. For the simulation, I have customized Bootstrap to have a 36-column grid layout. 
+	
+Next, let's look at the `culture.js` file, which contains the React component that actually represents the simulated grid.
+
+```javascript
+var intervalId;
+
+var Grid = React.createClass({  
+  load: function(u) {
+    $.ajax({
+      url: u,
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        this.setState({
+          data: data,
+        });
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(u, status, err.toString());
+      }.bind(this)
+    });
+  },
+  tick: function() {
+    this.load(this.props.tick);
+  },
+  start: function() {
+    this.load(this.props.start);
+  },  
+  getInitialState: function() {
+    return {
+      data: [],
+    };
+  },
+  componentDidMount: function() {
+    this.start();
+  },
+  handleSetup: function() {
+    clearInterval(intervalId);
+    this.start();
+  },
+  handleStart: function() {
+      this.tick();
+      intervalId = setInterval(this.tick, 500);    
+  },
+  render: function() {
+    return ( 
+      <div className="container">
+        <div className="row">
+        {this.state.data.map((o, i) =>
+            <div key={i} className="col-lg-1 col-sm-1 col-md-1 col-xs-1 nopadding">
+              <div className="thumbnail nopadding" style={{backgroundColor: "#" + o.toString(16)}}>&nbsp;</div>
+            </div>
+          )}
+        </div>
+        <hr/>
+        <div className="text-center">          
+          <button className="btn btn-default" onClick={this.handleSetup}>Setup</button>
+          <button className="btn btn-default" onClick={this.handleStart}>Start</button>
+        </div>          
+      </div>      
+    );
+  },  
+});
+
+React.render(
+    <Grid tick="/culture" start="/culture/start"/>, document.getElementById('content')
+);
+```
+As you can see, I created the simulation grid as a contiguous row of `col-1` division (or `<div>`) elements, and because of the 36-column limit, a 36x36 grid is created.
+
+## Running the simulation
+
 Let's run it and see what we get. You should be able to get the same simulation as the one in the figure below when you access the url http://localhost:9292/culture/show in your browser.
 
 ![The simulation grid](figures/culture/culture_sim.png)
@@ -315,31 +434,27 @@ From the simulation we can observe the following:
 
 1. The number of unique cultures reduced over time. This is not unexpected, after all we do expect cultures to interact and become more and more alike each other until they become the same. However, the number of unique cultures never actually drop to just 1 even after a long time.
 2. The cultures become more alike over time. Again this is not unexpected as cultural exchanges are supposed to make them more alike over time. However after an initial precipitious drop, the cultural difference more or less flattens out, even as the number of unique cultures continue dropping. Even as the there are less unique cultures, the ones that remain are still quite different from each other
-3. The number of cultural changes remains about the same over time. Intuitively we'd expect the number of changes to become smaller because as there are less unique cultures. However the cultures also become more alike, and more likely to interact with each other and therefore these even out.
+3. The number of cultural changes remains about the same over time, which is about 15% of `n`. Intuitively we'd expect the number of changes to become smaller because as there are less unique cultures. However the cultures also become more alike, and more likely to interact with each other and therefore these even out.
 
 Let's see what happens if we change n to be larger than 1/3 of the size of the grid. In the next simulation, I'll use n to be the size of the grid. This is what happens.
 
 ![The simulation with n = the grid size](figures/culture/culture_grid_size_chart.png)
 
-From the simulation, we can observe the following:
-
-
-
-
-
-Now let's try n that is smaller than the 1/3 of the size of the grid. I'll use 1/6 of the size of the grid instead. This is what happens.
+While pattern observed in number of cultural changes and cultural distance remains about the same, though sped up (not unsurprisingly), the decline of the number of unique cultures is quite steep. Now let's try the other way round and use an n that is smaller than the 1/3 of the size of the grid. I'll use 1/6 of the size of the grid instead. This is what happens.
 
 ![The simulation with n = 1/6 of the grid size](figures/culture/culture_1_6_grid_size_chart.png)
 
-From the simulation, we can observe the following:
+Again, the patterns for the number of cultural changes and cultural distance over time remains about the same, the decline of the number of unique cultures is a lot less steeper than before, and for a period of time, even flattened out before continuing the decline.
+
+From the observations, it would seem when the frequency of cultures interactions changes, cultural distances and probability of interaction follow the same pattern over time. However, the number of unique cultures decrease drastically as cultural interactions increase.
+
+## Summary
+
+Agent-based simulations are like scientific experiments in which you can create the perfect environment and agents for your scenarios and in which you can tweak parameters quickly and find out the possible outcomes. We can isolate and reduce a complicated situation into its elemental form and perform the experiments that we want. In a way this helps us to understand complexity and it's unpredictable outcome a little bit better. 
+
+A final note -- while I discussed this in the context of cultural exchanges, what I've shown here is a computer simulation with a limited set of controlled parameters. Models or simulations should be taken as what they are, simply models that are not true representatives of reality.
 
 
-
-
-
-
-
-A final note -- while I discussed this in the context of cultural exchanges, what I've shown here is a computer simulation with a limited set of controlled parameters. 
 
 [1]: http://hdl.handle.net/1828/1322 "Charnell, M. (2008) Individual-based modelling of ecological systems and social aggregations"
 [2]: http://www-personal.umich.edu/~axe/research/Dissemination.pdf "Axelrod, R. (1997) The dissemination of culture a model with local convergence and global polarization"
