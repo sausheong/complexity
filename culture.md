@@ -74,7 +74,7 @@ Let's take a look at the simulation code next.
 
 ## The simulation in Ruby
 
-First, we need to build out the grid using a Grid class, which is subclassed from Array. Here's the code in a file named `grid.rb`.
+First, we need to build out the grid using a `Grid` class, which is subclassed from `Array`. Here's the code in a file named `grid.rb`.
 
 ```ruby
 class Grid < Array
@@ -136,7 +136,7 @@ end
 
 ```
 
-When we create an instance of Grid, all its cells are initialized with random colors. The main method that is used is `find_neighbours_index` which returns an array of the indices of the neighbors in the grid. As you can see from the code, the corner cells have 3 neighbors, the edge cells have 5 neighbors and the rest all have 8 neighbors.
+When we create an instance of `Grid`, all its cells are initialized with random colors. The main method that is used is `find_neighbours_index` which returns an array of the indices of the neighbors in the grid. As you can see from the code, the corner cells have 3 neighbors, the edge cells have 5 neighbors and the rest all have 8 neighbors.
 
 The main simulation code is in the `CultureSimulation` class, in a file named `culture.rb`.
 
