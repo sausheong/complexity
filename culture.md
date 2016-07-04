@@ -454,6 +454,8 @@ Agent-based simulations are like scientific experiments in which you can create 
 
 A final note -- while I discussed this in the context of cultural exchanges, what I've shown here is a computer simulation with a limited set of controlled parameters. Models or simulations should be taken as what they are, simply models that are not true representatives of reality.
 
+The full GitHub repository of the simulation can be found here - https://github.com/sausheong/ruby_complexity_simulations
+
 
 
 [1]: http://hdl.handle.net/1828/1322 "Charnell, M. (2008) Individual-based modelling of ecological systems and social aggregations"
